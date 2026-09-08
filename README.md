@@ -3,7 +3,6 @@
 > **Status:** Proof of Concept — functional and validated.
 > Core ingestion, deduplication, windowing, and drain-progress patterns are implemented and working.
 > Intended for evaluation, experimentation, and learning — not yet production-hardened.
-> See [Known Limitations](#known-limitations) and [Roadmap](#roadmap) before scoping a production implementation.
 
 **Stack:** Spring Boot 3.3 · Java 21 · Apache Kafka (KRaft) · DataStax Astra DB Serverless
 
@@ -432,7 +431,7 @@ For Prometheus scraping, distributed tracing, and liveness/readiness probe detai
 
 ## Known Limitations
 
-This is a Proof of Concept. See [`docs/production-readiness-gaps.md`](docs/production-readiness-gaps.md) for the complete assessment.
+This is a Proof of Concept. See [`docs/known-limitations.md`](docs/known-limitations.md) for the complete assessment.
 
 | Limitation | Production impact |
 |---|---|
@@ -456,7 +455,7 @@ These design questions should be resolved before scoping a production implementa
 5. **Inbox retention** — how long must events be retained? (Default: 24 hours.)
 6. **Downstream sink contract** — what is the production downstream target and its idempotency and durability requirements?
 
-See [`docs/requirements-traceability.md`](docs/requirements-traceability.md) for the full
+See [`docs/specification-compliance.md`](docs/specification-compliance.md) for the full
 specification alignment matrix.
 
 ---
@@ -476,13 +475,26 @@ specification alignment matrix.
 
 ---
 
+## Where to Go Next
+
+| Intent | Document |
+|---|---|
+| Run a guided hands-on walkthrough | [`docs/demo-guide.md`](docs/demo-guide.md) |
+| Understand the implementation in depth | [`docs/architecture-engineering.md`](docs/architecture-engineering.md) |
+| Evaluate production suitability and limitations | [`docs/known-limitations.md`](docs/known-limitations.md) |
+| Deploy beyond local Docker | [`docs/deployment-guide.md`](docs/deployment-guide.md) |
+| Contribute or develop locally | [`docs/local-development-guide.md`](docs/local-development-guide.md) |
+| Review specification compliance | [`docs/specification-compliance.md`](docs/specification-compliance.md) |
+
+---
+
 ## Additional Documentation
 
 | Document | Purpose |
 |---|---|
-| [`docs/architecture-engineering.md`](docs/architecture-engineering.md) | Full component diagram, C4 context, sequence diagrams, complete DDL, error handling matrix |
-| [`docs/local-development-guide.md`](docs/local-development-guide.md) | IDE setup, advanced test commands, Kafka management tools, drainer tuning |
-| [`docs/deployment-guide.md`](docs/deployment-guide.md) | Standalone Docker, Kubernetes target model, managed Kafka config, operations runbook |
 | [`docs/demo-guide.md`](docs/demo-guide.md) | Complete demo walkthrough with all commands and expected outputs |
-| [`docs/requirements-traceability.md`](docs/requirements-traceability.md) | Specification alignment matrix and production design questions |
-| [`docs/production-readiness-gaps.md`](docs/production-readiness-gaps.md) | Complete known limitations with production impact classifications |
+| [`docs/architecture-engineering.md`](docs/architecture-engineering.md) | Full component diagram, C4 context, sequence diagrams, complete DDL, error handling matrix |
+| [`docs/known-limitations.md`](docs/known-limitations.md) | Complete known limitations with production impact classifications |
+| [`docs/deployment-guide.md`](docs/deployment-guide.md) | Standalone Docker, Kubernetes target model, managed Kafka config, operations runbook |
+| [`docs/local-development-guide.md`](docs/local-development-guide.md) | IDE setup, advanced test commands, Kafka management tools, drainer tuning |
+| [`docs/specification-compliance.md`](docs/specification-compliance.md) | Specification alignment matrix and production design questions |

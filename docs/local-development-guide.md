@@ -402,6 +402,6 @@ Install the **Extension Pack for Java** and **Spring Boot Extension Pack**. Crea
 | `KafkaListenerEndpointRegistry` exception on startup | Kafka not reachable | Start Kafka first: `docker compose -f docker-compose.kafka.yml up -d` |
 | Events produced but not appearing in Astra | Check `inbox.events.astra_error` counter | View app logs: `docker compose logs -f inbox` |
 | DLT consumer sees no messages | No parse errors have occurred | Produce a malformed event to trigger DLT routing |
-| `inbox.events.late_arrival` non-zero | Events arriving after their bucket was drained | Expected PoC behaviour: persisted and counted, not automatically forwarded (L-07). See [`requirements-traceability.md`](requirements-traceability.md) R-04 |
+| `inbox.events.late_arrival` non-zero | Events arriving after their bucket was drained | Expected PoC behaviour: persisted and counted, not automatically forwarded (L-07). See [`specification-compliance.md`](specification-compliance.md) R-04 |
 | Drainer not producing files | `INBOX_DRAINER_ENABLED=false` (default) | Set `INBOX_DRAINER_ENABLED=true` |
 | Port 9092 already in use | Another Kafka or process using the port | `lsof -i :9092` and kill the conflicting process |

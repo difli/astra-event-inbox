@@ -1,6 +1,6 @@
 # Known Limitations
 
-**astra-event-inbox** is a Proof of Concept. Specification compliance: [`requirements-traceability.md`](requirements-traceability.md).
+**astra-event-inbox** is a Proof of Concept. Specification compliance: [`specification-compliance.md`](specification-compliance.md).
 
 ---
 
@@ -19,7 +19,7 @@ After `INBOX_TTL_SECONDS` (24 h), the row expires. If the event has not been rep
 
 **This behaviour does not fully satisfy the source specification’s requirement that every late message must still be processed.**
 
-Do not describe post-drain late arrivals as fully handled. Do not implement rebucketing or automatic replay until the open design questions are resolved (see [`requirements-traceability.md`](requirements-traceability.md) Open Design Questions 1–5).
+Do not describe post-drain late arrivals as fully handled. Do not implement rebucketing or automatic replay until the open design questions are resolved (see [`specification-compliance.md`](specification-compliance.md) Open Design Questions 1–5).
 
 ---
 

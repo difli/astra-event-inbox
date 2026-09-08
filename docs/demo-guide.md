@@ -2,7 +2,7 @@
 
 Step-by-step script for demonstrating `astra-event-inbox`. Estimated duration: **20–30 minutes**.
 
-For specification compliance and known limitations, see [`requirements-traceability.md`](requirements-traceability.md) and [`production-readiness-gaps.md`](production-readiness-gaps.md).
+For specification compliance and known limitations, see [`specification-compliance.md`](specification-compliance.md) and [`known-limitations.md`](known-limitations.md).
 
 ---
 

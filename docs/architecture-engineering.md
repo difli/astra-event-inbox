@@ -4,7 +4,7 @@
 
 > Authoritative technical reference — all diagrams and tables are derived from the live codebase.
 
-Specification compliance: [`requirements-traceability.md`](requirements-traceability.md) · Known limitations: [`production-readiness-gaps.md`](production-readiness-gaps.md)
+Specification compliance: [`specification-compliance.md`](specification-compliance.md) · Known limitations: [`known-limitations.md`](known-limitations.md)
 
 | Section | Content |
 |---|---|
@@ -275,7 +275,7 @@ WITH CLUSTERING ORDER BY (event_ts ASC, event_id ASC)
 
 - One Cassandra partition per time window (5 s default).
 - **Partition-size estimate only** (specification peak × assumed payload, not a measured result): at 2,000 msg/s peak, a 5 s window is ~10,000 events × ~4 KB ≈ **40 MB per partition**, under Astra’s 100 MB partition warning threshold. This calculation evaluates estimated partition size only. It does not validate end-to-end throughput, latency, hot-partition behaviour, or cost.
-- TTL 24 h is a safety backstop. Adjust for your required inbox retention (see Open Design Question 9 in [`requirements-traceability.md`](requirements-traceability.md)).
+- TTL 24 h is a safety backstop. Adjust for your required inbox retention (see Open Design Question 9 in [`specification-compliance.md`](specification-compliance.md)).
 
 ### `tds_inbox.drain_progress`
 

@@ -4,7 +4,7 @@
 
 This document maps the **Event Inbox** specification requirements to the current **astra-event-inbox** Proof of Concept implementation.
 
-It is the **authoritative source for specification compliance**. Implementation architecture is in [`architecture-engineering.md`](architecture-engineering.md). Known limitations are in [`production-readiness-gaps.md`](production-readiness-gaps.md).
+It is the **authoritative source for specification compliance**. Implementation architecture is in [`architecture-engineering.md`](architecture-engineering.md). Known limitations are in [`known-limitations.md`](known-limitations.md).
 
 **Status values:**
 
@@ -88,4 +88,4 @@ These questions should be resolved before scoping a production implementation:
 - Do not claim throughput support before validation.
 - Do not claim full specification compliance.
 
-Related: [`production-readiness-gaps.md`](production-readiness-gaps.md) · [`architecture-engineering.md`](architecture-engineering.md)
+Related: [`known-limitations.md`](known-limitations.md) · [`architecture-engineering.md`](architecture-engineering.md)
