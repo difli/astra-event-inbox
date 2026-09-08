@@ -1,4 +1,4 @@
-# Event Inbox Pattern — Reference Implementation with Astra DB and Kafka
+# Event Inbox Pattern using Astra DB and Kafka
 
 > **Status:** Proof of Concept — functional and validated.
 > Core ingestion, deduplication, windowing, and drain-progress patterns are implemented and working.
