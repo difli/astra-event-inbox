@@ -1,0 +1,72 @@
+# =============================================================================
+# docker-compose.kafka.yml – Kafka only (for host-side development)
+#
+# Use this when you want to run the inbox application directly on the Mac
+# with 'mvn spring-boot:run' while Kafka lives inside the colima-kafka VM.
+#
+# Usage:
+#   docker --context colima-kafka compose -f docker-compose.kafka.yml up -d
+#
+# Then on the host:
+#   KAFKA_BOOTSTRAP_SERVERS=192.168.5.1:9092 mvn spring-boot:run
+#
+# Or set KAFKA_BOOTSTRAP_SERVERS=192.168.5.1:9092 in your .env file.
+#
+# The Colima VM IP (192.168.5.1) is the default gateway from inside the VM
+# and is always reachable from the Mac host. If your setup differs, check:
+#   colima ssh --profile kafka -- ip addr show eth0
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Kafka – KRaft mode (no ZooKeeper)
+  #
+  # Dual listeners:
+  #   INTERNAL://kafka:29092   → container-to-container (kafka-setup)
+  #   EXTERNAL://0.0.0.0:9092  → advertised as 192.168.5.1:9092 so the
+  #                              Mac host can connect through the port mapping
+  # ---------------------------------------------------------------------------
+  kafka:
+    image: confluentinc/cp-kafka:7.7.0
+    container_name: inbox-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      # EXTERNAL advertised as localhost:9092 — Colima forwards 0.0.0.0:9092 to the Mac host
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_LOG_DIRS: /tmp/kafka-logs
+      CLUSTER_ID: "astra-inbox-local-cluster"
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------------------
+  # Topic initialisation – runs once then exits
+  # Creates topics with the correct partition count BEFORE the app connects.
+  # Without this, Kafka auto-creates cloud-events with 1 partition instead of 6.
+  # ---------------------------------------------------------------------------
+  kafka-setup:
+    image: confluentinc/cp-kafka:7.7.0
+    container_name: inbox-kafka-setup
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: "no"
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic cloud-events --partitions 6 --replication-factor 1 &&
+        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic cloud-events.DLT --partitions 1 --replication-factor 1 &&
+        echo 'Topics ready'

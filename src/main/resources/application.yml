@@ -1,0 +1,116 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: astra-event-inbox
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP:astra-event-inbox}
+      auto-offset-reset: earliest
+      # Do NOT enable auto-commit; we commit manually after a successful Astra write
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      max-poll-records: ${KAFKA_MAX_POLL_RECORDS:100}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    listener:
+      ack-mode: MANUAL_IMMEDIATE
+      # 6 threads — matches the 6 partitions of the cloud-events topic.
+      # INITIAL TEST VALUE: the claim that 6 threads sustain 2,000 msg/s requires
+      # confirmation by the load test (InboxLoadTest). Tune after load test evidence.
+      concurrency: ${KAFKA_CONSUMER_CONCURRENCY:6}
+
+inbox:
+  kafka:
+    topic: ${KAFKA_TOPIC:cloud-events}
+    dead-letter-topic: ${KAFKA_DLT_TOPIC:cloud-events.DLT}
+    # Delay between successive Astra-error retries (ms). A zero delay causes a tight
+    # spin loop during an outage; 1000 ms provides natural back-pressure without
+    # starving other partitions assigned to the same thread.
+    retry-interval-ms: ${INBOX_KAFKA_RETRY_INTERVAL_MS:1000}
+    health:
+      # Partition lag threshold above which the health indicator reports DOWN.
+      max-lag: ${INBOX_KAFKA_HEALTH_MAX_LAG:10000}
+
+  astra:
+    secure-bundle-path: ${ASTRA_SECURE_BUNDLE_PATH}
+    client-id: ${ASTRA_CLIENT_ID}
+    client-secret: ${ASTRA_CLIENT_SECRET}
+    keyspace: ${ASTRA_KEYSPACE:tds_inbox}
+    # LOCAL_QUORUM for writes (Astra Serverless is single-region; safe default)
+    # Disallowed by Astra: ANY, ONE, LOCAL_ONE
+    write-consistency: LOCAL_QUORUM
+    # Astra DB request timeout in milliseconds
+    request-timeout-ms: ${ASTRA_REQUEST_TIMEOUT_MS:5000}
+    # Row TTL in seconds.  Default 86400 s (24 h) is a Phase 1 safety backstop.
+    # NOT the final production value — revisit when drainer SLA is defined.
+    # Must satisfy: TTL >= watermark_advance_time + allowed_lateness + drain_processing_time + margin
+    ttl-seconds: ${INBOX_TTL_SECONDS:86400}
+    # Async writes (default OFF — sync path is the safe default).
+    # Enable only after load testing confirms sync path cannot meet throughput targets.
+    async-writes: ${INBOX_ASYNC_WRITES:false}
+    # Max concurrent in-flight Astra writes per consumer thread (async path only).
+    # Derivation: ceil(target_tps / (threads × (1_000 / p50_ms)))
+    # Default 4 = adequate for 2,000 msg/s at p50=2 ms with 6 threads.
+    max-in-flight-writes: ${INBOX_MAX_IN_FLIGHT_WRITES:4}
+    # Retry / backoff for Astra rate-limit (OverloadedException) and transient errors
+    # Astra default rate limit: ~12,000 ops/sec; cold-start burst: 4,096 ops/sec
+    retry:
+      max-attempts: ${ASTRA_RETRY_MAX_ATTEMPTS:5}
+      base-delay-ms: ${ASTRA_RETRY_BASE_DELAY_MS:100}
+      max-delay-ms: ${ASTRA_RETRY_MAX_DELAY_MS:5000}
+
+  window:
+    # Time-window size in seconds (W in the spec). Default 5 s.
+    size-seconds: ${INBOX_WINDOW_SIZE_SECONDS:5}
+    # Allowed-lateness window in seconds (Phase 2 contract; not enforced in Phase 1).
+    # A bucket is sealed when: watermark > window_bucket + W + allowed_lateness_seconds.
+    allowed-lateness-seconds: ${INBOX_ALLOWED_LATENESS_SECONDS:60}
+
+  drainer:
+    # PoC constraint: only ONE drainer instance may run at a time.
+    # Distributed locking is not yet implemented — running multiple instances
+    # simultaneously will cause duplicate drain processing.
+    # Set to true to activate draining; default is false (writer-only mode).
+    enabled: ${INBOX_DRAINER_ENABLED:false}
+    # Logical drainer identity — recorded in drain_progress.drain_id.
+    drain-id: ${INBOX_DRAINER_DRAIN_ID:primary}
+    # Poll interval in milliseconds between drainer cycles.
+    poll-interval-ms: ${INBOX_DRAINER_POLL_INTERVAL_MS:5000}
+    # Output directory for the FileWriterEventSink.
+    output-path: ${INBOX_DRAINER_OUTPUT_PATH:/tmp/inbox-drain}
+    # CQL read consistency level for SELECT queries.
+    read-consistency: ${INBOX_DRAINER_READ_CONSISTENCY:LOCAL_QUORUM}
+    # Bootstrap mode on first run (no prior drain_progress):
+    #   LATEST     — start from current time minus lateness window (skip history, default)
+    #   CONFIGURED — start from the explicit startBucket epoch-second value
+    bootstrap-mode: ${INBOX_DRAINER_BOOTSTRAP_MODE:LATEST}
+    # Epoch-second bucket to start from when bootstrap-mode=CONFIGURED. Must be > 0.
+    start-bucket: ${INBOX_DRAINER_START_BUCKET:0}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  # inbox.events.late_arrival is exposed alongside the other inbox counters:
+  #   inbox.events.success, inbox.events.parse_error, inbox.events.astra_error
+  # Scrape via: GET /actuator/metrics/inbox.events.late_arrival
+  endpoint:
+    health:
+      show-details: always
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+logging:
+  level:
+    com.tds.inbox: INFO
+    com.datastax.oss.driver: WARN
