@@ -485,16 +485,3 @@ specification alignment matrix.
 | Deploy beyond local Docker | [`docs/deployment-guide.md`](docs/deployment-guide.md) |
 | Contribute or develop locally | [`docs/local-development-guide.md`](docs/local-development-guide.md) |
 | Review specification compliance | [`docs/specification-compliance.md`](docs/specification-compliance.md) |
-
----
-
-## Additional Documentation
-
-| Document | Purpose |
-|---|---|
-| [`docs/demo-guide.md`](docs/demo-guide.md) | Complete demo walkthrough with all commands and expected outputs |
-| [`docs/architecture-engineering.md`](docs/architecture-engineering.md) | Full component diagram, C4 context, sequence diagrams, complete DDL, error handling matrix |
-| [`docs/known-limitations.md`](docs/known-limitations.md) | Complete known limitations with production impact classifications |
-| [`docs/deployment-guide.md`](docs/deployment-guide.md) | Standalone Docker, Kubernetes target model, managed Kafka config, operations runbook |
-| [`docs/local-development-guide.md`](docs/local-development-guide.md) | IDE setup, advanced test commands, Kafka management tools, drainer tuning |
-| [`docs/specification-compliance.md`](docs/specification-compliance.md) | Specification alignment matrix and production design questions |
