@@ -483,7 +483,7 @@ flowchart TD
   K8s --> AstraCloud
 ```
 
-The service is **stateless** by design — all durable state lives in Astra DB. Horizontal scaling of the ingestion path is straightforward; the drainer requires a distributed lock before multiple replicas can run simultaneously (see [`future-enhancements.md`](future-enhancements.md) E-01).
+The service is **stateless** by design — all durable state lives in Astra DB. Horizontal scaling of the ingestion path is straightforward; the drainer requires a distributed lock before multiple replicas can run simultaneously.
 
 ---
 
@@ -510,7 +510,7 @@ Read the source in this order to understand the data flow:
 
 - **Deduplication boundary.** The primary key `(window_bucket, event_ts, event_id)` makes every INSERT an upsert for those three values. This is not unconditional deduplication by `event_id` alone. The same `event_id` with a different `event_ts` produces a second row. This is not end-to-end exactly-once processing.
 
-- **Sync vs async writes.** Sync (`INBOX_ASYNC_WRITES=false`) is the default and the safe choice. Async is an opt-in performance mode with a process-wide semaphore cap (`INBOX_MAX_IN_FLIGHT_WRITES`). Do not enable async without load-test evidence that sync cannot meet throughput targets (see L-05, E-10).
+- **Sync vs async writes.** Sync (`INBOX_ASYNC_WRITES=false`) is the default and the safe choice. Async is an opt-in performance mode with a process-wide semaphore cap (`INBOX_MAX_IN_FLIGHT_WRITES`). Do not enable async without load-test evidence that sync cannot meet throughput targets (see L-05).
 
 - **DrainerCursor shared state.** `DrainerCursor` is a shared, thread-safe `long`. After a drain cycle completes, it advances. On restart, `initialiseCursorIfNeeded()` restores the cursor from `drain_progress` before the first consumer event is processed — late-arrival detection is accurate from the very first message after restart.
 

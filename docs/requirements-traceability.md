@@ -88,4 +88,4 @@ These questions should be resolved before scoping a production implementation:
 - Do not claim throughput support before validation.
 - Do not claim full specification compliance.
 
-Related: [`production-readiness-gaps.md`](production-readiness-gaps.md) · [`future-enhancements.md`](future-enhancements.md) · [`architecture-engineering.md`](architecture-engineering.md)
+Related: [`production-readiness-gaps.md`](production-readiness-gaps.md) · [`architecture-engineering.md`](architecture-engineering.md)

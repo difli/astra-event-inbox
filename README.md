@@ -461,23 +461,6 @@ specification alignment matrix.
 
 ---
 
-## Roadmap
-
-Engineering candidates for evolving this PoC toward production. See [`docs/future-enhancements.md`](docs/future-enhancements.md) for implementation details.
-
-| Enhancement | Priority |
-|---|---|
-| Distributed drainer lock via Astra DB LWT | P0 |
-| Production downstream sink (Kafka / REST / cloud storage) | P0 |
-| End-to-end load testing | P1 |
-| Kubernetes / Helm deployment manifests | P1 |
-| Event-time watermark sealing | P2 |
-| Prometheus metrics endpoint | P2 |
-| OpenTelemetry distributed tracing | P2 |
-| Replay API (`POST /admin/replay`) | P2 |
-
----
-
 ## Troubleshooting
 
 | Symptom | Likely cause | Fix |
@@ -503,4 +486,3 @@ Engineering candidates for evolving this PoC toward production. See [`docs/futur
 | [`docs/demo-guide.md`](docs/demo-guide.md) | Complete demo walkthrough with all commands and expected outputs |
 | [`docs/requirements-traceability.md`](docs/requirements-traceability.md) | Specification alignment matrix and production design questions |
 | [`docs/production-readiness-gaps.md`](docs/production-readiness-gaps.md) | Complete known limitations with production impact classifications |
-| [`docs/future-enhancements.md`](docs/future-enhancements.md) | Full enhancement proposals with implementation detail |

@@ -1,6 +1,6 @@
 # Known Limitations
 
-**astra-event-inbox** is a Proof of Concept. Specification compliance: [`requirements-traceability.md`](requirements-traceability.md). Enhancement candidates: [`future-enhancements.md`](future-enhancements.md).
+**astra-event-inbox** is a Proof of Concept. Specification compliance: [`requirements-traceability.md`](requirements-traceability.md).
 
 ---
 
@@ -50,7 +50,7 @@ This PoC therefore:
 - differs from stream-derived sealing
 - requires a production decision before implementation (Open Design Question 6)
 
-Related evaluation work is listed as E-17 in [`future-enhancements.md`](future-enhancements.md). Do not implement a watermark in this PoC until that decision is made.
+Do not implement a watermark in this PoC until that decision is made.
 
 ---
 
@@ -109,7 +109,7 @@ The required workload target is a peak of 1,000 to 2,000 messages per second wit
 
 The default concurrency value of 6 is marked in `application.yml` as an "INITIAL TEST VALUE" pending load-test confirmation. The async write path (`INBOX_ASYNC_WRITES=true`) is also unvalidated.
 
-A planned load-test campaign (E-10) may use 500 msg/s as a baseline, 1,000 msg/s as an intermediate scenario, and 2,000 msg/s as the required peak scenario. An optional burst above that peak is a resilience experiment only, not a supported throughput target.
+A load-test campaign is needed using 500 msg/s as a baseline, 1,000 msg/s as an intermediate scenario, and 2,000 msg/s as the required peak scenario. An optional burst above that peak is a resilience experiment only, not a supported throughput target.
 
 ---
 

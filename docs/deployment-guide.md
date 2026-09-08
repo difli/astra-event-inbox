@@ -12,7 +12,7 @@ Covers deploying `astra-event-inbox` beyond the local development environment.
 |---|---|---|
 | Local Docker Compose | ✅ Ready | Development and demo use |
 | Single Docker container (any host) | ✅ Ready | Manual setup required |
-| Kubernetes (Helm / Kustomize) | ❌ Not yet implemented | See [future-enhancements.md](future-enhancements.md) |
+| Kubernetes (Helm / Kustomize) | ❌ Not yet implemented | — |
 | Cloud-managed Kafka (MSK, Confluent Cloud) | ✅ Config-only | Change `KAFKA_BOOTSTRAP_SERVERS` and add TLS/SASL config |
 
 ---
@@ -241,7 +241,7 @@ kubectl create secret generic astra-secure-connect-bundle \
 
 ### Important scaling constraint
 
-> **Run only ONE replica when `INBOX_DRAINER_ENABLED=true`.** Distributed locking for the drainer is not yet implemented. Multiple drainer replicas will produce duplicate drain processing. Set `replicas: 1` until the distributed lock enhancement is implemented (see [future-enhancements.md](future-enhancements.md)).
+> **Run only ONE replica when `INBOX_DRAINER_ENABLED=true`.** Distributed locking for the drainer is not yet implemented. Multiple drainer replicas will produce duplicate drain processing. Set `replicas: 1` until distributed locking is implemented.
 
 The **ingestion path** (writer-only mode, `INBOX_DRAINER_ENABLED=false`) is safe to scale horizontally because each consumer thread handles its own Kafka partition independently, and Astra writes are idempotent.
 
