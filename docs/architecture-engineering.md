@@ -309,16 +309,16 @@ Enabled by `INBOX_ASYNC_WRITES=true` (default: off). The listener still blocks u
 sequenceDiagram
   participant Consumer as InboxKafkaConsumer
   participant Repo as EventRepository
-  participant Semaphore as Semaphore(maxInFlight=4)
+  participant Semaphore as Semaphore maxInFlight=4
   participant Astra as Astra DB
 
   Consumer->>Repo: saveAsync(event)
-  Repo->>Semaphore: acquire()  [process-wide; blocks if all permits taken]
+  Repo->>Semaphore: acquire() [blocks if all permits taken]
   Semaphore-->>Repo: permit granted
   Repo->>Astra: session.executeAsync(bound)
-  Repo-->>Consumer: CompletableFuture<Void>
+  Repo-->>Consumer: CompletableFuture
   Consumer->>Consumer: add to partitionFutures[tp]
-  Consumer->>Consumer: allOf(partitionFutures).get()  [wait before return]
+  Consumer->>Consumer: allOf(partitionFutures).get() [wait before return]
   Astra-->>Repo: AsyncResultSet
   Repo->>Semaphore: release()
   Repo-->>Consumer: future.complete(null)
@@ -645,24 +645,24 @@ sequenceDiagram
   autonumber
   participant K as Kafka
   participant C as InboxKafkaConsumer
-  participant Sem as Semaphore(maxInFlight)
+  participant Sem as Semaphore maxInFlight
   participant R as EventRepository
   participant A as Astra DB
 
   K->>C: ConsumerRecord (partition=2, offset=104)
   C->>C: check partitionFutures[tp=2] for failures
   C->>R: saveAsync(slupEvent)
-  R->>Sem: acquire()  [blocks if all permits taken]
+  R->>Sem: acquire() [blocks if all permits taken]
   Sem-->>R: permit granted
   R->>A: session.executeAsync(bound)
-  R-->>C: CompletableFuture<Void>
+  R-->>C: CompletableFuture
   C->>C: partitionFutures[tp=2].add(future)
-  C->>C: CompletableFuture.allOf(partitionFutures).get()  [wait for all in-flight writes]
+  C->>C: allOf(partitionFutures).get() [wait for all in-flight writes]
   A-->>R: AsyncResultSet
   R->>Sem: release()
   R->>C: future.complete(null)
   C->>C: clearPartitionFutures(tp=2)
-  C->>C: ack.acknowledge()   [offset committed]
+  C->>C: ack.acknowledge() [offset committed]
   C->>C: successCounter.increment()
 ```
 
