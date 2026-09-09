@@ -96,12 +96,17 @@ flowchart TD
 
   FileSystem["Local filesystem<br/>/tmp/inbox-drain/<br/>{drain_id}_{bucket}.jsonl"]
 
-  P0 & P1 & P2 & P3 & P4 & P5 -->|poll| Consumer
+  P0 -->|poll| Consumer
+  P1 -->|poll| Consumer
+  P2 -->|poll| Consumer
+  P3 -->|poll| Consumer
+  P4 -->|poll| Consumer
+  P5 -->|poll| Consumer
   Consumer -->|parse| Parser
   Parser -->|uses| Calc
   Parser -->|parse error| DLTPublisher
   DLTPublisher --> DLT
-  Consumer -->|save(SlupEvent)| Repo
+  Consumer -->|save SlupEvent| Repo
   Repo --> Retry
   Retry -->|CQL INSERT| SlupInbox
   Consumer -->|checkLateArrival| Cursor
